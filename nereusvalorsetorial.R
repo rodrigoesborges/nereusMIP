@@ -25,10 +25,10 @@ for (link in links) {
   foias <-excel_sheets(path = arqdest)
   write.csv2(foias, file = gsub('(.*)(\\.xl)(.*)','\\1-folhas.csv',arqdest))
 }
-producao <- data.frame()
-producaonova <- data.frame()
+producao <- data.frame(matrix(nrow = 48, ncol = 0))
+producaonova <- data.frame(nrow = 74, ncol = 0)
 
-#Criar as séries de produção por produtos
+#Criar as séries de produção por setores
 for (link in links) {
   pedaco <- unlist(strsplit(link,"/"))
   arqleitura <- paste0("~/RLocalData/MIP-BR/",pedaco[length(pedaco)])
@@ -37,20 +37,20 @@ for (link in links) {
   fprod <- read_excel(arqleitura, "Producao",col_names = TRUE)
 
   if (anoarq < 2010){
-    #cab <- fprod[which(fprod$`0101` == 1),]
-    fprod <- fprod[which(fprod$DESCRIÇÃO == "PRODUÇÃO POR PRODUTO"),]
-    fprod[1,1] <- anoarq
-#    cab[1] <- "ano"
     
-    producao <- rbind(producao,fprod)
+    fprod <- fprod[,84]
+    fprod[1,1] <- anoarq
+
+    
+    producao <- cbind(producao,fprod)
       }
   else {
-    #cab <- fprod[which(fprod$X__1 == 1),]
-    fprod <- fprod[which(fprod$DESCRIÇÃO == "Total\r\ndo produto"),]
+
+    fprod <- fprod[,132]
     fprod[1,1] <- anoarq
-    #cab[1] <- "ano"
-    producaonova <- rbind(producaonova,fprod)
-    #   names(producao) <- cab
+
+    producaonova <- cbind(producaonova,fprod)
+
       }
 }
 

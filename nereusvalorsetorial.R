@@ -102,18 +102,18 @@ producaonova <- producaonova[!is.na(names(producaonova))]
 # Alimentos e Bebidas - 24 ao 30
   alim <- producao[,c("24","25","26","27","28","29","30")]
   alim <- rowSums(alim)
-  names(alim) <- producao[,1]
+ # names(alim) <- producao[,1]
   
   prodc[,3] <- alim
 
 # Metalurgia básica 
   metal <- producao[,c("05","06","07")]
   metal <- rowSums(metal)
-  names(metal) <- producao[,1]
+#  names(metal) <- producao[,1]
   
   prodc[,7] <- metal
   
-  ## Dados médios 2010 a 2013 -> pesca e aquicultura em proporção ao setor 0280 (Florestal, pesca e aqui)
+  ## Ideal : Dados médios 2010 a 2013 -> pesca e aquicultura em proporção ao setor 0280 (Florestal, pesca e aqui)
   pesca280 <- (9162+335+210)/29049
   
   ## Dados médios 2010 a 2013 -> pesca e aqu. em proporção a total de agropecuária+0280
@@ -131,5 +131,42 @@ producaonova <- producaonova[!is.na(names(producaonova))]
   prodcm <- melt(prodc)
   names(prodcm) <- c("ano","divisao","valorprod")
   prodcm <- prodcm[order(prodcm$ano,prodcm$divisao),]
+  
+  ###########PARA MIP 68 SETORES
+  
+  prodcn <- producaonova[,c("0191","0280","1091","1400","1700","1991","2491")]
+  
+  
+  ###agricultura e pecuária 0191 + 0192
+  agrpec <- producaonova[,c("0191","0192")]
+  agrpec <- rowSums(agrpec)
+  prodcn[,1] <- agrpec
+  
+  #### pesca aquicultura = pesca280 * 0280
+  prodcn[,2] <- prodcn[,2]*pesca280
+  
+  ### alimentos e bebidas 1091+1092+1093+1100
+  alimn <- producaonova[,c("1091","1092","26","27","28","29","30")]
+  alimn <- rowSums(alimn)
+  prodcn[,3] <- alimn
+  
+  ### coque petróleo e biocombustíveis 1991+1992
+  coq <- producaonova[,c("1991","1992")]
+  coq <- rowSums(coq)
+  
+  prodcn[,6] <- coq
+  
+  ### metalurgia básica 2491+2492
+  metn <- producaonova[,c("2491","2492")]
+  metn <- rowSums(metn)
+  
+  prodc[,7] <- metn
+  row.names(prodcn) <- producaonova[,1]
+  
+  names(prodcn) <- c("01","05","15","18","21","23","27")
+  prodcn <- add_rownames(prodcn, var = "Ano")
+  prodcn <- melt(prodcn)
+  names(prodcn) <- c("ano","divisao","valorprod")
+  prodcn <- prodcn[order(prodcn$ano,prodcn$divisao),]
   
   #gsub('(.* .* .*?) (.*?)','\\1\n\\2', dados a substituir o terceiro espaço)
